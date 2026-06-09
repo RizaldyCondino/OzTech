@@ -1,4 +1,4 @@
-import CategoryNav from "@/components/CategoryNavbar";
+import CategoryNav from "@/components/Categories/CategoryNavbar";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";

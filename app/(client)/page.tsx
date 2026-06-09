@@ -17,6 +17,8 @@ async function getHeroSlides() {
   }
 }
 
+
+
 export default async function Home() {
   const slides = await getHeroSlides();
 
@@ -26,6 +28,22 @@ export default async function Home() {
         slides={slides} 
         autoPlayMs={6000} 
       />
+
+      {/* Best Deals */}
+
+      {/* Top Selected Products on the week */}
+
+      {/* Popular Search */}
+
+      {/* Delivery Icons  */}
+
+      {/* Flash Sales */}
+
+      {/* Hot Sales */}
+
+      {/* Recently View */}
+
+      {/* Brands */}
     </div>
   );
 }

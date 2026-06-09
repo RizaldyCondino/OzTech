@@ -1,7 +1,6 @@
 "use client";
 import { ShoppingCart, Search, Flame, Heart, X } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -23,11 +22,9 @@ import UnderlineLink from "./UnderlineLink";
 import {
   TOP_BAR_LEFT,
   TOP_BAR_RIGHT,
-  
   CURRENCIES,
   LANGUAGES,
 } from "@/constants/data";
-import CategoryNav from "./CategoryNavbar";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -37,13 +34,8 @@ export default function Navbar() {
   return (
     <div className="w-full">
       {/* ── Top Bar — hidden on mobile ── */}
-      <motion.div
-        className="hidden md:block bg-[#303655] text-white px-6 py-2"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-">
+      <div className="hidden md:block bg-[#303655] text-white px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Left */}
           <div className="flex items-center gap-6">
             {TOP_BAR_LEFT.map(({ icon: Icon, label, href }) => (
@@ -104,15 +96,10 @@ export default function Navbar() {
             </Select>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ── Main Navbar ── */}
-      <motion.div
-        className="bg-white px-4 md:px-6 py-3 md:py-4"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-      >
+      <div className="bg-white px-4 md:px-6 py-3 md:py-4">
         <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-6">
           {/* Mobile: Hamburger + Drawer */}
           <div className="flex md:hidden shrink-0">
@@ -147,11 +134,7 @@ export default function Navbar() {
           {/* Right Actions */}
           <div className="flex items-center gap-2 md:gap-5 shrink-0">
             {/* Mobile search toggle */}
-            <motion.div
-              className="flex md:hidden"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <div className="flex md:hidden">
               <Button
                 variant="ghost"
                 size="icon"
@@ -160,48 +143,44 @@ export default function Navbar() {
               >
                 <Search className="w-5 h-5 text-gray-700" />
               </Button>
-            </motion.div>
+            </div>
 
             {/* Wishlist */}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative cursor-pointer"
-                aria-label="Wishlist"
-              >
-                <Heart className="w-5 h-5 text-gray-700" />
-                {cartCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-[#303655]">
-                    {cartCount}
-                  </Badge>
-                )}
-              </Button>
-            </motion.div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative cursor-pointer"
+              aria-label="Wishlist"
+            >
+              <Heart className="w-5 h-5 text-gray-700" />
+              {cartCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-[#303655]">
+                  {cartCount}
+                </Badge>
+              )}
+            </Button>
 
             {/* Cart */}
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative cursor-pointer"
-                aria-label="Cart"
-              >
-                <ShoppingCart className="w-5 h-5 text-gray-700" />
-                {cartCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-[#303655]">
-                    {cartCount}
-                  </Badge>
-                )}
-              </Button>
-            </motion.div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative cursor-pointer"
+              aria-label="Cart"
+            >
+              <ShoppingCart className="w-5 h-5 text-gray-700" />
+              {cartCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-[#303655]">
+                  {cartCount}
+                </Badge>
+              )}
+            </Button>
 
             {/* Auth */}
-            <div className="flex items-center  gap-2">
+            <div className="flex items-center gap-2">
               <Show when="signed-out">
                 {/* Mobile: plain text link */}
                 <SignInButton mode="modal">
-                  <button className="flex md:hidden text-sm  text-gray-700 underline underline-offset-2 cursor-pointer">
+                  <button className="flex md:hidden text-sm text-gray-700 underline underline-offset-2 cursor-pointer">
                     Login
                   </button>
                 </SignInButton>
@@ -231,35 +210,28 @@ export default function Navbar() {
         </div>
 
         {/* Mobile expandable search bar */}
-        <AnimatePresence>
-          {searchOpen && (
-            <motion.div
-              className="md:hidden mt-3 relative"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
+        {searchOpen && (
+          <div className="md:hidden mt-3 relative">
+            <Input
+              type="text"
+              placeholder="Search products..."
+              className="pr-10 h-10 rounded-lg w-full"
+              autoFocus
+            />
+            <Button
+              size="icon"
+              variant="ghost"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
+              onClick={() => setSearchOpen(false)}
             >
-              <Input
-                type="text"
-                placeholder="Search products..."
-                className="pr-10 h-10 rounded-lg w-full"
-                autoFocus
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent"
-                onClick={() => setSearchOpen(false)}
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+              <X className="w-4 h-4 text-gray-500" />
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* ── Category Nav — desktop only ── */}
+      {/* Add your CategoryNav here if needed */}
     </div>
   );
 }

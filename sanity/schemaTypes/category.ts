@@ -1,3 +1,4 @@
+// schemas/category.ts
 import { defineField, defineType } from "sanity";
 import { TagIcon } from "@sanity/icons";
 
@@ -21,6 +22,13 @@ export const categorySchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "parent",
+      title: "Parent Category",
+      type: "reference",
+      to: [{ type: "category" }],
+      description: "Leave empty for main categories",
+    }),
+    defineField({
       name: "description",
       title: "Description",
       type: "text",
@@ -40,13 +48,16 @@ export const categorySchema = defineType({
     }),
   ],
   orderings: [
-    {
-      title: "Display Order",
-      name: "orderAsc",
-      by: [{ field: "order", direction: "asc" }],
-    },
+    { title: "Display Order", name: "orderAsc", by: [{ field: "order", direction: "asc" }] },
   ],
   preview: {
-    select: { title: "label", media: "image" },
+    select: { title: "label", media: "image", parent: "parent.label" },
+    prepare(selection: any) {
+      return {
+        title: selection.title,
+        subtitle: selection.parent ? `Sub of ${selection.parent}` : "Main Category",
+        media: selection.media,
+      };
+    },
   },
 });

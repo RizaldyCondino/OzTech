@@ -34,14 +34,14 @@ export const LANGUAGES = ["EN", "FR", "ES"];
 
 // ─── Categories ────────────────────────────────────────────
 export const CATEGORIES = [
-  { label: "All Categories", href: "#all" },
-  { label: "Accessories", href: "#accessories" },
-  { label: "Smartphones", href: "#smartphones" },
-  { label: "Computers", href: "#computers" },
-  { label: "Gaming", href: "#gaming" },
-  { label: "TV & Monitors", href: "#tv-monitors" },
-  { label: "Headphones", href: "#headphones" },
-  { label: "Speakers", href: "#speakers" },
+  { label: "All Categories", href: "/category/all" },
+  { label: "Accessories", href: "/category/accessories" },
+  { label: "Smartphones", href: "/category/smartphones" },
+  { label: "Computers", href: "/category/computers" },
+  { label: "Gaming", href: "/category/gaming" },
+  { label: "TV & Monitors", href: "/category/tv-monitors" },
+  { label: "Headphones", href: "/category/headphones" },
+  { label: "Speakers", href: "/category/speakers" },
 ];
 
 // ─── Nav Items ─────────────────────────────────────────────
