@@ -1,23 +1,31 @@
+import HeroCarousel from "@/components/Hero/HeroCarousel";
+import { HeroSlide } from "@/sanity.types";
+import { client } from "@/sanity/lib/client";
 
 
+async function getHeroSlides() {
+  try {
+    const slides = await client.fetch<HeroSlide[]>(
+      `*[_type == "heroSlide" && active == true] | order(order asc)`,
+      {},
+      { next: { revalidate: 60 } } // Optional: ISR caching
+    );
+    return slides;
+  } catch (error) {
+    console.error("Failed to fetch hero slides:", error);
+    return [];
+  }
+}
 
-export default function Home() {
+export default async function Home() {
+  const slides = await getHeroSlides();
+
   return (
     <div >
-      
-      {/* <div className="h-[200px] bg-gray-50 flex items-center justify-center text-gray-400">
-        Scroll down to see sticky nav
-      </div>
-
-      <div  className="h-screen bg-white flex items-center justify-center text-2xl font-bold">
-        All Categories
-      </div>
-      <div  className="h-screen bg-gray-50 flex items-center justify-center text-2xl font-bold">
-        Smartphones
-      </div>
-      <div  className="h-screen bg-white flex items-center justify-center text-2xl font-bold">
-        Computers
-      </div> */}
+      <HeroCarousel 
+        slides={slides} 
+        autoPlayMs={6000} 
+      />
     </div>
   );
 }
