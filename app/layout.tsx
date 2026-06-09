@@ -10,8 +10,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - OnZone",
-    default: "OnZone",
+    template: "%s - OzTech",
+    default: "OzTech",
   },
   description: "In the zone, focused, locked in.",
 };

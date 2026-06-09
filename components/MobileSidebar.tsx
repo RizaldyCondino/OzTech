@@ -101,14 +101,7 @@ export default function MobileSidebar() {
             </a>
           ))}
 
-          <div className="flex gap-2 pt-1">
-            <Button size="default" className="flex-1 h-9 bg-[#303655] hover:bg-[#303655]/80 text-white text-xs">
-              Login
-            </Button>
-            <Button size="default" className="flex-1 h-9 bg-[#303655] hover:bg-[#303655]/80 text-white text-xs">
-              Sign up
-            </Button>
-          </div>
+          
 
           <div className="flex items-center gap-3 pt-1">
             <Select defaultValue={CURRENCIES[0]}>

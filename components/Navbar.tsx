@@ -3,7 +3,7 @@ import { ShoppingCart, Search, Flame, Heart, X } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-
+import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,7 @@ import UnderlineLink from "./UnderlineLink";
 import {
   TOP_BAR_LEFT,
   TOP_BAR_RIGHT,
-  CATEGORIES,
+  
   CURRENCIES,
   LANGUAGES,
 } from "@/constants/data";
@@ -43,7 +43,7 @@ export default function Navbar() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-sm">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-">
           {/* Left */}
           <div className="flex items-center gap-6">
             {TOP_BAR_LEFT.map(({ icon: Icon, label, href }) => (
@@ -83,7 +83,9 @@ export default function Navbar() {
               </SelectTrigger>
               <SelectContent>
                 {CURRENCIES.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -94,7 +96,9 @@ export default function Navbar() {
               </SelectTrigger>
               <SelectContent>
                 {LANGUAGES.map((l) => (
-                  <SelectItem key={l} value={l}>{l}</SelectItem>
+                  <SelectItem key={l} value={l}>
+                    {l}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -110,7 +114,6 @@ export default function Navbar() {
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-6">
-
           {/* Mobile: Hamburger + Drawer */}
           <div className="flex md:hidden shrink-0">
             <MobileSidebar />
@@ -193,14 +196,36 @@ export default function Navbar() {
               </Button>
             </motion.div>
 
-            {/* Auth — desktop only */}
-            <div className="hidden md:flex items-center gap-2">
-              <button className="flex items-center justify-center h-10 px-5 text-sm font-normal text-white bg-[#303655] border-0 rounded-[0.4rem] cursor-pointer shadow-[0_0.5rem_1rem_rgba(143,142,142,0.15)] hover:bg-[#303655]/80 transition-colors">
-                Login
-              </button>
-              <button className="flex items-center justify-center h-10 px-5 text-sm font-normal text-white bg-[#303655] border-0 rounded-[0.4rem] cursor-pointer shadow-[0_0.5rem_1rem_rgba(143,142,142,0.15)] hover:bg-[#303655]/80 transition-colors">
-                Sign up
-              </button>
+            {/* Auth */}
+            <div className="flex items-center  gap-2">
+              <Show when="signed-out">
+                {/* Mobile: plain text link */}
+                <SignInButton mode="modal">
+                  <button className="flex md:hidden text-sm  text-gray-700 underline underline-offset-2 cursor-pointer">
+                    Login
+                  </button>
+                </SignInButton>
+
+                {/* Desktop: full buttons */}
+                <SignInButton mode="modal">
+                  <button className="hidden md:flex items-center justify-center h-10 px-5 text-sm font-normal text-white bg-[#303655] border-0 rounded-[0.4rem] cursor-pointer shadow-[0_0.5rem_1rem_rgba(143,142,142,0.15)] hover:bg-[#303655]/80 transition-colors">
+                    Login
+                  </button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="hidden md:flex items-center justify-center h-10 px-5 text-sm font-normal text-white bg-[#303655] border-0 rounded-[0.4rem] cursor-pointer shadow-[0_0.5rem_1rem_rgba(143,142,142,0.15)] hover:bg-[#303655]/80 transition-colors">
+                    Sign up
+                  </button>
+                </SignUpButton>
+              </Show>
+
+              <div className="px-2">
+                <Show when="signed-in">
+                  <UserButton
+                    appearance={{ elements: { avatarBox: "h-9 w-9" } }}
+                  />
+                </Show>
+              </div>
             </div>
           </div>
         </div>
@@ -235,8 +260,6 @@ export default function Navbar() {
       </motion.div>
 
       {/* ── Category Nav — desktop only ── */}
-      
-      
     </div>
   );
 }

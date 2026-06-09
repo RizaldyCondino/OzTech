@@ -58,7 +58,7 @@ import { Headphones } from "lucide-react";
 import { FaFacebook, FaYoutube, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
 
 // ─── Footer Data ─────────────────────────────────────────────
-
+ 
 export const QUICK_LINKS = [
   { label: "About us", href: "#about" },
   { label: "Contact us", href: "#contact" },
