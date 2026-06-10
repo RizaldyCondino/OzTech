@@ -103,7 +103,7 @@ function ContactColumn() {
         </div>
         <div className="flex flex-col">
           <span className="text-xs text-gray-400">Have any question?</span>
-          <span className="text-sm font-medium text-[#f97316]">
+          <span className="text-sm font-medium text-[#303655]">
             + 123 456 789
           </span>
         </div>

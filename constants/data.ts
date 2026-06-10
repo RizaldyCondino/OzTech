@@ -86,9 +86,9 @@ export const SOCIAL_LINKS = [
 
 export const PAYMENT_METHODS = [
   { label: "VISA", color: "#1a56db" },
-  { label: "MASTERCARD", color: "#f97316" },
+  { label: "MASTERCARD", color: "##303655" },
   { label: "PAYPAL", color: "#0ea5e9" },
-  { label: "BITCOIN", color: "#f59e0b" },
+  { label: "BITCOIN", color: "#303655" },
 ];
 
 // Contact Column specific data

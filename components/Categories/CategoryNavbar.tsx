@@ -12,15 +12,16 @@ import { CATEGORIES } from "@/constants/data";
 export default function CategoryNav() {
   const pathname = usePathname();
   const [isSticky, setIsSticky] = useState(false);
+  const isAllCategory = pathname.startsWith("/category/all");
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Adjust 80 to match your top bar + main navbar height
-      setIsSticky(window.scrollY > 80);
-    };
+    if (isAllCategory) return;
+    const handleScroll = () => setIsSticky(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isAllCategory]);
+
+  if (isAllCategory) return null;
 
   return (
     <div

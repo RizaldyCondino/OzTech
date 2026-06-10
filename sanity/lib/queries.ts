@@ -30,3 +30,4 @@ export const CATEGORY_COUNTS_QUERY = `
     "parentId": category->parent->_id
   }
 `;
+

@@ -12,8 +12,6 @@ interface CategoryBannerProps {
 
 export default function CategoryBanner({
   category,
-  salePercentage = 80,
-  countdownEndDate,
 }: CategoryBannerProps) {
   const imageUrl = category.image?.asset
     ? urlFor(category.image)
@@ -53,18 +51,6 @@ export default function CategoryBanner({
           </div>
         </div>
 
-        {/* Sale Box */}
-        {/* {countdownEndDate && (
-          <div className="w-full lg:w-96 bg-gradient-to-br from-orange-500 to-orange-600 p-8 lg:p-10 flex flex-col items-center justify-center text-white">
-            <div className="text-center">
-              <div className="text-xl font-medium">Super Sale</div>
-              <div className="text-7xl font-bold mt-2 mb-6 tracking-tighter">
-                {salePercentage}%
-              </div>
-              <CountdownTimer targetDate={countdownEndDate} />
-            </div>
-          </div>
-        )} */}
       </div>
     </div>
   );
