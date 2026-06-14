@@ -34,6 +34,22 @@ export const categorySchema = defineType({
       type: "text",
       rows: 3,
     }),
+
+    // schemas/category.ts — add this field
+defineField({
+  name: "displayStyle",
+  title: "Product Display Style",
+  type: "string",
+  options: {
+    list: [
+      { title: "Grid (default)", value: "grid" },
+      { title: "Wide List",      value: "wide" },
+    ],
+    layout: "radio",
+  },
+  initialValue: "grid",
+  description: "Wide List shows horizontal cards — best for computers & laptops",
+}),
     defineField({
       name: "image",
       title: "Category Image",

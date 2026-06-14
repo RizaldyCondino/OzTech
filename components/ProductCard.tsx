@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
+import { useState } from "react";
 
 interface VariantValue {
   _key: string;
@@ -74,6 +75,8 @@ export default function ProductCard({
   specs,
   variants,
 }: ProductCardProps) {
+  const [favorited, setFavorited] = useState(false);
+
   const mainImage = images?.[0];
   const imageUrl = mainImage?.asset
     ? urlFor(mainImage).width(400).height(400).fit("crop").crop("center").url()
@@ -84,13 +87,11 @@ export default function ProductCard({
       ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
       : null;
 
-  // First variant group label summary, e.g. "3 colors"
   const firstVariant = variants?.[0];
   const variantSummary = firstVariant
     ? `${firstVariant.values.length} ${firstVariant.optionName.toLowerCase()}${firstVariant.values.length !== 1 ? "s" : ""}`
     : null;
 
-  // Quick-glance specs — show first 2 only
   const previewSpecs = specs?.slice(0, 2);
 
   return (
@@ -155,14 +156,12 @@ export default function ProductCard({
           {name}
         </h3>
 
-        {/* Short description */}
         {shortDescription && (
           <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed mt-0.5">
             {shortDescription}
           </p>
         )}
 
-        {/* Quick specs */}
         {previewSpecs && previewSpecs.length > 0 && (
           <ul className="mt-1.5 flex flex-col gap-0.5">
             {previewSpecs.map((spec) => (
@@ -174,7 +173,6 @@ export default function ProductCard({
           </ul>
         )}
 
-        {/* Variant summary */}
         {variantSummary && (
           <p className="text-[11px] text-gray-400 mt-1">{variantSummary}</p>
         )}
@@ -198,21 +196,43 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Add to cart */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            // TODO: dispatch to cart store
-          }}
-          disabled={!inStock}
-          className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl
-                     text-sm font-medium transition-colors
-                     bg-[#303655] text-white hover:bg-[#3d4470]
-                     disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-        >
-          <ShoppingCart size={14} />
-          {inStock ? "Add to cart" : "Unavailable"}
-        </button>
+        {/* Actions */}
+        <div className="mt-3 flex items-center gap-2">
+          {/* Favorite */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setFavorited((prev) => !prev);
+              // TODO: dispatch to wishlist store
+            }}
+            className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl
+                        border transition-all duration-200
+                        ${favorited
+                          ? "border-red-200 bg-red-50 text-red-500"
+                          : "border-gray-200 text-gray-400 hover:border-red-200 hover:bg-red-50 hover:text-red-500"}`}
+          >
+            <Heart
+              size={16}
+              className={favorited ? "fill-red-500" : ""}
+            />
+          </button>
+
+          {/* Add to cart */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              // TODO: dispatch to cart store
+            }}
+            disabled={!inStock}
+            className="flex-1 flex items-center justify-center gap-2 h-10 rounded-xl
+                       text-sm font-medium transition-colors
+                       bg-[#303655] text-white hover:bg-[#3d4470]
+                       disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+          >
+            <ShoppingCart size={14} />
+            {inStock ? "Add to cart" : "Unavailable"}
+          </button>
+        </div>
       </div>
     </Link>
   );

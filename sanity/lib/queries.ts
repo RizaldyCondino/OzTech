@@ -6,28 +6,32 @@ export const PRODUCTS_BY_CATEGORY_QUERY = `
       category->parent->slug.current == $slug
     )
   ] | order(_createdAt desc) {
-    _id,
-    name,
-    slug,
-    price,
+    _id, 
+    name, 
+    slug, 
+    price, 
     compareAtPrice,
-    badge,
-    inStock,
-    "images": images[]{
-      asset,
-      alt
-    },
+    badge, 
+    inStock, 
+    featured,
+    shortDescription,
+    specs,                    // ← Add this
+    variants,                 // ← Optional: also good to add
+    "images": images[]{ asset, alt },
     "brand": brand->{ name, slug },
-    "category": category->{ label, slug }
+    "category": category->{ 
+      label, 
+      slug,
+      "displayStyle": coalesce(parent->displayStyle, displayStyle)
+    }
   }
 `;
-
-// lib/queries.ts
 
 export const CATEGORY_COUNTS_QUERY = `
-  *[_type == "product"] {
-    "categoryId": category->_id,
-    "parentId": category->parent->_id
+  *[_type == "category"] {
+    "_id": _id,
+    "isParent": !defined(parent),
+    "count": count(*[_type == "product" && category->parent._ref == ^._id]),
+    "productCount": count(*[_type == "product" && category._ref == ^._id])
   }
 `;
-

@@ -26,8 +26,26 @@ import {
   LANGUAGES,
 } from "@/constants/data";
 
-export default function Navbar() {
+interface Category {
+  _id: string;
+  label: string;
+  slug: { current: string };
+  parent?: { _id: string; label: string; slug: { current: string } };
+}
+
+interface NavbarProps {
+  categories?: Category[];
+  counts?: Record<string, number>;
+}
+
+export default function Navbar({
+  categories = [],
+  counts = {},
+}: NavbarProps) {
   const pathname = usePathname();
+  const activeSlug = pathname.startsWith("/category/")
+    ? pathname.split("/category/")[1]?.split("/")[0]
+    : "";
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartCount] = useState(1);
 
@@ -103,7 +121,11 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto flex items-center gap-3 md:gap-6">
           {/* Mobile: Hamburger + Drawer */}
           <div className="flex md:hidden shrink-0">
-            <MobileSidebar />
+            <MobileSidebar
+              categories={categories}
+              activeSlug={activeSlug}
+              counts={counts}
+            />
           </div>
 
           {/* Logo */}

@@ -12,7 +12,7 @@ import { CATEGORIES } from "@/constants/data";
 export default function CategoryNav() {
   const pathname = usePathname();
   const [isSticky, setIsSticky] = useState(false);
-  const isAllCategory = pathname.startsWith("/category/all");
+const isAllCategory = pathname.startsWith("/category/all");
 
   useEffect(() => {
     if (isAllCategory) return;
