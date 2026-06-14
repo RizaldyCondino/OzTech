@@ -47,7 +47,11 @@ export default function CategorySidebar({
 
   return (
    <div className="border rounded-2xl p-6 bg-white shadow-sm">
-      <h2 className="font-semibold text-xl mb-5">All Categories</h2>
+      <Link href="/category/all">
+  <h2 className="font-semibold text-xl mb-5 hover:underline cursor-pointer">
+    All Categories
+  </h2>
+</Link>
 
       <div className="space-y-0.5">
         {mainCategories.map((cat) => {

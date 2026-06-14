@@ -2,7 +2,6 @@
 import { CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import {
-  BRANDS,
   COLORS,
   LOCATIONS,
   MAX_PRICE,
@@ -12,6 +11,7 @@ import {
 
 interface Props {
   filters: FilterState;
+  brands: string[];
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   toggleColor: (v: string) => void;
   selectAllColors: () => void;
@@ -21,6 +21,7 @@ interface Props {
 
 export default function FilterContent({
   filters,
+  brands,
   setFilters,
   toggleColor,
   selectAllColors,
@@ -89,7 +90,7 @@ export default function FilterContent({
         </div>
       </div>
 
-      {/* Brand */}
+      {/* Brand — dynamic from Sanity */}
       <div className="relative">
         <select
           value={filters.brand}
@@ -98,39 +99,27 @@ export default function FilterContent({
                      bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 cursor-pointer"
         >
           <option value="">Choose Brand</option>
-          {BRANDS.map((b) => (
-            <option key={b} value={b}>
-              {b}
-            </option>
+          {brands.map((b) => (
+            <option key={b} value={b}>{b}</option>
           ))}
         </select>
-        <ChevronDown
-          size={16}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-        />
+        <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
       </div>
 
       {/* Location */}
       <div className="relative">
         <select
           value={filters.location}
-          onChange={(e) =>
-            setFilters((p) => ({ ...p, location: e.target.value }))
-          }
+          onChange={(e) => setFilters((p) => ({ ...p, location: e.target.value }))}
           className="w-full appearance-none border rounded-xl px-4 py-3 text-sm text-gray-600
                      bg-white focus:outline-none focus:ring-2 focus:ring-orange-200 cursor-pointer"
         >
           <option value="">Choose Location</option>
           {LOCATIONS.map((l) => (
-            <option key={l} value={l}>
-              {l}
-            </option>
+            <option key={l} value={l}>{l}</option>
           ))}
         </select>
-        <ChevronDown
-          size={16}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-        />
+        <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
       </div>
 
       {/* Colors */}
@@ -141,12 +130,7 @@ export default function FilterContent({
             onClick={selectAllColors}
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-orange-500 transition-colors"
           >
-            <CheckCircle2
-              size={14}
-              className={
-                allColorsSelected ? "text-orange-500" : "text-gray-300"
-              }
-            />
+            <CheckCircle2 size={14} className={allColorsSelected ? "text-orange-500" : "text-gray-300"} />
             Select All
           </button>
         </div>
@@ -158,11 +142,9 @@ export default function FilterContent({
                 key={color.value}
                 onClick={() => toggleColor(color.value)}
                 className={`px-3 py-2 rounded-xl border text-sm font-medium transition-all
-                            ${
-                              isActive
-                                ? "bg-orange-50 border-orange-200 text-orange-600"
-                                : "border-gray-200 text-gray-600 hover:border-orange-200 hover:bg-orange-50"
-                            }`}
+                            ${isActive
+                              ? "bg-orange-50 border-orange-200 text-orange-600"
+                              : "border-gray-200 text-gray-600 hover:border-orange-200 hover:bg-orange-50"}`}
               >
                 {color.label}
               </button>
@@ -174,11 +156,7 @@ export default function FilterContent({
             onClick={() => setShowAllColors((p) => !p)}
             className="flex items-center gap-1 text-sm text-orange-500 hover:text-orange-600 font-medium"
           >
-            {showAllColors ? (
-              <ChevronUp size={14} />
-            ) : (
-              <ChevronDown size={14} />
-            )}
+            {showAllColors ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             {showAllColors ? "Show less" : "+ Show more"}
           </button>
         )}

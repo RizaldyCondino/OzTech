@@ -3,8 +3,6 @@ import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import CategoryBanner from "@/components/Categories/CategoryBanner ";
 import CategorySidebar from "@/components/Categories/CategorySidebar";
-import ProductCard from "@/components/ProductCard";
-import ProductCardWide from "@/components/Products/ProductCardWide";
 import { client } from "@/sanity/lib/client";
 import {
   CATEGORY_COUNTS_QUERY,
@@ -12,12 +10,53 @@ import {
 } from "@/sanity/lib/queries";
 import ProductFilter from "@/components/Filters/ProductFilter";
 import FilterDrawer from "@/components/Filters/FilterDrawer";
-import Pagination from "@/components/Pagination";
-
+import { FilterProvider } from "@/components/Filters/FilterProvider";
+import CategoryProductResults from "@/components/Categories/CategoryProductResults";
 
 export const revalidate = 60;
 
-const ITEMS_PER_PAGE = 8;
+interface CategoryNavItem {
+  _id: string;
+  label: string;
+  slug: { current: string };
+  parent?: { _id: string; label: string; slug: { current: string } };
+}
+
+interface CategoryItem extends CategoryNavItem {
+  description?: string;
+  image?: { asset?: unknown };
+  displayStyle?: "grid" | "wide";
+}
+
+interface ProductListItem {
+  _id: string;
+  name: string;
+  slug: { current: string };
+  price: number;
+  compareAtPrice?: number | null;
+  badge?: "HOT" | "NEW" | "SALE" | "BEST_SELLER" | null;
+  inStock?: boolean;
+  featured?: boolean;
+  images?: {
+    _key?: string;
+    asset: { _ref: string; _type: "reference" };
+    alt?: string;
+  }[];
+  brand?: { name: string; slug?: { current: string } };
+  category?: { label: string; slug?: { current: string } };
+  shortDescription?: string;
+  specs?: { _key: string; key: string; value: string }[];
+  variants?: {
+    _key: string;
+    optionName: string;
+    values: {
+      _key: string;
+      label: string;
+      priceModifier: number;
+      inStock: boolean;
+    }[];
+  }[];
+}
 
 export async function generateStaticParams() {
   const categories: { slug: { current: string } }[] = await client.fetch(
@@ -55,23 +94,23 @@ const getCategoryCounts = unstable_cache(
   ["category-counts"],
   { revalidate: 60 }
 );
-
 async function getCategory(slug: string) {
-  return client.fetch(
+  return client.fetch<CategoryItem | null>(
     `*[_type == "category" && slug.current == $slug][0]{
-      _id, label, slug, description, image, displayStyle,
-      parent->{ _id, label, slug }
+      _id, label, slug, description, displayStyle,
+      image,
+      parent->{ _id, label, slug, description, image }
     }`,
     { slug }
   );
 }
 
 async function getProductsByCategory(slug: string) {
-  return client.fetch(PRODUCTS_BY_CATEGORY_QUERY, { slug });
+  return client.fetch<ProductListItem[]>(PRODUCTS_BY_CATEGORY_QUERY, { slug });
 }
 
 async function getAllProducts() {
-  return client.fetch(`
+  return client.fetch<ProductListItem[]>(`
     *[_type == "product"] | order(_createdAt desc) {
       _id, name, slug, price, compareAtPrice, badge, inStock, featured,
       images[]{ asset, alt },
@@ -87,82 +126,55 @@ function PageLayout({
   allCategories,
   categoryCounts,
   activeSlug,
+  brands,
   basePath = "/category",
   children,
 }: {
-  allCategories: any[];
+  allCategories: CategoryNavItem[];
   categoryCounts: Record<string, number>;
   activeSlug: string;
+  brands: string[];
   basePath?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="hidden lg:flex lg:w-72 flex-shrink-0 flex-col gap-4 sticky top-8 self-start">
-          <CategorySidebar
-            categories={allCategories}
-            activeSlug={activeSlug}
-            counts={categoryCounts}
-            basePath={basePath}
-          />
-          <ProductFilter />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="lg:hidden">
-            <FilterDrawer />
+    <FilterProvider brands={brands}>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {activeSlug === "all" && (
+            <div className="hidden lg:flex lg:w-72 flex-shrink-0 flex-col gap-4 sticky top-8 self-start">
+              <CategorySidebar
+                categories={allCategories}
+                activeSlug={activeSlug}
+                counts={categoryCounts}
+                basePath={basePath}
+              />
+              <ProductFilter />
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="lg:hidden">
+              <FilterDrawer />
+            </div>
+            {activeSlug !== "all" && (
+              <div className="hidden lg:block">
+                <FilterDrawer placement="right" />
+              </div>
+            )}
+            {children}
           </div>
-          {children}
         </div>
       </div>
-    </div>
-  );
-}
-
-function ProductGrid({
-  products,
-  displayStyle = "grid",
-}: {
-  products: any[];
-  displayStyle?: "grid" | "wide";
-}) {
-  if (products.length === 0) {
-    return (
-      <div className="mt-4 py-20 text-center border rounded-2xl text-gray-400">
-        No products in this category yet.
-      </div>
-    );
-  }
-
-  if (displayStyle === "wide") {
-    return (
-      <div className="mt-4 flex flex-col gap-4">
-        {products.map((product) => (
-          <ProductCardWide key={product._id} {...product} />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {products.map((product) => (
-        <ProductCard key={product._id} {...product} />
-      ))}
-    </div>
+    </FilterProvider>
   );
 }
 
 export default async function CategoryPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ page?: string }>;
 }) {
   const { slug } = await params;
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam ?? 1));
 
   if (slug === "all") {
     const [allCategories, categoryCounts, allProducts] = await Promise.all([
@@ -171,62 +183,62 @@ export default async function CategoryPage({
       getAllProducts(),
     ]);
 
-    const products = allProducts.slice(
-      (page - 1) * ITEMS_PER_PAGE,
-      page * ITEMS_PER_PAGE
-    );
+    const brands = [...new Set(allProducts.map((p) => p.brand?.name).filter(Boolean))] as string[];
 
     return (
       <PageLayout
         allCategories={allCategories}
         categoryCounts={categoryCounts}
         activeSlug="all"
+        brands={brands}
         basePath="/category/all"
       >
         <h2 className="text-3xl font-bold mb-2">All Products</h2>
         <p className="text-gray-500">
           {allProducts.length} product{allProducts.length !== 1 ? "s" : ""}
         </p>
-        <ProductGrid products={products} />
         <Suspense fallback={null}>
-          <Pagination totalItems={allProducts.length} itemsPerPage={ITEMS_PER_PAGE} />
+          <CategoryProductResults products={allProducts} />
         </Suspense>
       </PageLayout>
     );
   }
 
-  const [category, allProducts] = await Promise.all([
+  const [category, allCategories, categoryCounts, allProducts] = await Promise.all([
     getCategory(slug),
+    getAllCategories(),
+    getCategoryCounts(),
     getProductsByCategory(slug),
   ]);
 
   if (!category) notFound();
 
-  const products = allProducts.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  // parent->{ image } is now fetched directly in getCategory
+  const parentCategory = category.parent ?? undefined;
+
+  const brands = [...new Set(allProducts.map((p) => p.brand?.name).filter(Boolean))] as string[];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <PageLayout
+      allCategories={allCategories}
+      categoryCounts={categoryCounts}
+      activeSlug={slug}
+      brands={brands}
+      basePath="/category"
+    >
       <CategoryBanner
         category={category}
-        salePercentage={65}
-        countdownEndDate={new Date(Date.now() + 1000 * 60 * 60 * 48)}
+        parentCategory={parentCategory}
       />
-      <div className="lg:hidden mt-4">
-        <FilterDrawer />
-      </div>
       <div className="mt-6">
         <h2 className="text-3xl font-bold mb-2">{category.label}</h2>
         <p className="text-gray-500">
           {allProducts.length} product{allProducts.length !== 1 ? "s" : ""}
         </p>
-        <ProductGrid products={products} displayStyle={category.displayStyle} />
         <Suspense fallback={null}>
-          <Pagination totalItems={allProducts.length} itemsPerPage={ITEMS_PER_PAGE} />
+          <CategoryProductResults products={allProducts} displayStyle={category.displayStyle} />
         </Suspense>
       </div>
-    </div>
+    </PageLayout>
   );
 }

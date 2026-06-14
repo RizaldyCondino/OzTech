@@ -12,16 +12,16 @@ import { CATEGORIES } from "@/constants/data";
 export default function CategoryNav() {
   const pathname = usePathname();
   const [isSticky, setIsSticky] = useState(false);
-const isAllCategory = pathname.startsWith("/category/all");
+const isCategoryPage = pathname.startsWith("/category/all");
 
-  useEffect(() => {
-    if (isAllCategory) return;
-    const handleScroll = () => setIsSticky(window.scrollY > 80);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isAllCategory]);
+useEffect(() => {
+  if (isCategoryPage) return;
+  const handleScroll = () => setIsSticky(window.scrollY > 80);
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [isCategoryPage]);
 
-  if (isAllCategory) return null;
+if (isCategoryPage) return null;
 
   return (
     <div

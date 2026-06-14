@@ -9,7 +9,6 @@ export const COLORS = [
   { label: "Gold",  value: "gold"  },
 ];
 
-export const BRANDS    = ["Apple", "Samsung", "Xiaomi", "Oppo", "Vivo"];
 export const LOCATIONS = ["Manila", "Cebu", "Davao", "Quezon City"];
 export const MIN_PRICE = 0;
 export const MAX_PRICE = 90_500;
@@ -22,7 +21,17 @@ export interface FilterState {
   colors: string[];
 }
 
-export function useFilterState() {
+export interface FilterableProduct {
+  price?: number | null;
+  brand?: { name?: string | null } | null;
+  variants?: {
+    values?: {
+      label?: string | null;
+    }[];
+  }[];
+}
+
+export function useFilterState(brands: string[] = []) {
   const [filters, setFilters] = useState<FilterState>({
     priceMin: MIN_PRICE,
     priceMax: MAX_PRICE,
@@ -54,5 +63,24 @@ export function useFilterState() {
     filters.colors.length +
     (filters.priceMin !== MIN_PRICE || filters.priceMax !== MAX_PRICE ? 1 : 0);
 
-  return { filters, setFilters, toggleColor, selectAllColors, reset, activeCount };
+  function filterProducts<T extends FilterableProduct>(products: T[]) {
+    return products.filter((p) => {
+      const price = p.price ?? 0;
+      if (price < filters.priceMin || price > filters.priceMax) return false;
+      if (filters.brand && p.brand?.name !== filters.brand) return false;
+      if (
+        filters.colors.length > 0 &&
+        !filters.colors.some((c) =>
+          p.variants?.some((v) =>
+            v.values?.some((val) =>
+              val.label?.toLowerCase().includes(c.toLowerCase())
+            )
+          )
+        )
+      ) return false;
+      return true;
+    });
+  }
+
+  return { filters, setFilters, toggleColor, selectAllColors, reset, activeCount, filterProducts, brands };
 }

@@ -1,18 +1,24 @@
-// components/CategoryBanner.tsx
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
-import CountdownTimer from './CountdownTimer';
-import { Category } from '@/sanity.types';
 
 interface CategoryBannerProps {
-  category: Category;
-  salePercentage?: number;
-  countdownEndDate?: Date;
+  category: {
+    label?: string;
+    description?: string;
+    image?: { asset?: unknown };
+  };
+  parentCategory?: {
+    label?: string;
+    description?: string;
+    image?: { asset?: unknown };
+  };
 }
 
-export default function CategoryBanner({ category }: CategoryBannerProps) {
-  const imageUrl = category.image?.asset
-    ? urlFor(category.image).width(1000).height(400).fit('crop').crop('center').url()
+export default function CategoryBanner({ category, parentCategory }: CategoryBannerProps) {
+  const displayCategory = parentCategory ?? category;
+
+  const imageUrl = displayCategory.image?.asset
+    ? urlFor(displayCategory.image).width(1000).height(400).fit('crop').crop('center').url()
     : null;
 
   return (
@@ -20,7 +26,7 @@ export default function CategoryBanner({ category }: CategoryBannerProps) {
       {imageUrl && (
         <Image
           src={imageUrl}
-          alt={category.label || 'Category'}
+          alt={displayCategory.label || 'Category'}
           fill
           className="object-cover"
           priority
@@ -29,11 +35,11 @@ export default function CategoryBanner({ category }: CategoryBannerProps) {
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
       <div className="absolute inset-0 p-6 flex flex-col justify-center">
         <h1 className="text-2xl lg:text-3xl font-bold text-white leading-tight">
-          {category.label}
+          {displayCategory.label}
         </h1>
-        {category.description && (
+        {displayCategory.description && (
           <p className="mt-2 text-white/90 max-w-md text-sm leading-relaxed">
-            {category.description}
+            {displayCategory.description}
           </p>
         )}
       </div>
